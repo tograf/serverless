@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Serverless TODO image app",
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.8.1",
     "@types/axios": "^0.14.0",
     "@types/http-errors": "^1.6.1",
     "aws-xray-sdk": "^2.2.0",
