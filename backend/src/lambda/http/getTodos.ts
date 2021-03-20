@@ -36,14 +36,18 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   try {
     const data:QueryCommandOutput = await client.send(command);
     if (data.Count === 0) {
+      const msg = `No items found for user ${userId}`;
+      logger.info(msg);
       response = {
         statusCode: 204,
-        body: JSON.stringify('No items found for user ' + userId)
+        body: JSON.stringify(msg)
       }
     } else {
+      const msg = `${data.Items.length} items found for user ${userId}`;
+      logger.info(msg);
       response = {
         statusCode: 200,
-        body: JSON.stringify(data.Items)
+        body: JSON.stringify(msg)
       }
     }
   } catch (error) {
