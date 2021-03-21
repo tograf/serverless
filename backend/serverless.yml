@@ -35,6 +35,7 @@ provider:
           - dynamodb:Query
           - dynamoDb:Scan
           - dynamodb:GetItem
+          - dynamodb:PutItem
         Resource:
           - "Fn::GetAtt": [TodosTable, Arn]
           - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_INDEX_NAME}

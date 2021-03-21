@@ -34,8 +34,8 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     response = createResponse(200, JSON.stringify({item: newItem}));
   }
   catch(err) {
+    logger.info(`Error creating Todo ${err}`);
     response = createResponse(500, JSON.stringify('Error creating Todo'));
-
   }
   return response
 }
