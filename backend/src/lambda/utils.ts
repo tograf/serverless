@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent } from "aws-lambda";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { parseUserId } from "../auth/utils";
 
 /**
@@ -13,4 +13,17 @@ export function getUserId(event: APIGatewayProxyEvent): string {
   const jwtToken = split[1]
 
   return parseUserId(jwtToken)
+}
+
+export function createResponse(httpCode: number, body: string): APIGatewayProxyResult {
+  const response = {
+    statusCode: httpCode,
+    body: body,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': true
+    }
+  }
+
+  return response;
 }

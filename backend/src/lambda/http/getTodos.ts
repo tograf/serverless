@@ -5,6 +5,7 @@ import { getAllTodos } from '../../business/todo'
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 import { createLogger } from '../../utils/logger'
 import { v4 } from 'uuid'
+import { createResponse } from '../utils'
 
 const logger = createLogger('getTodos')
 
@@ -22,27 +23,10 @@ export const handler: APIGatewayProxyHandler = async (
     const data = await getAllTodos(userId);
     const msg = `${data.length} items found for user ${userId}`
     logger.info(msg);
-    response = {
-      statusCode: 200,
-      body: JSON.stringify({items: data}),
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true
-      }
-    }
+    response = createResponse(200, JSON.stringify({items: data}));
   } catch (error) {
     logger.info(error);
-    response = {
-      statusCode: 500,
-      body: JSON.stringify(
-        'Error in the backend, please contact support with the following ID: ' +
-          v4()
-      ),
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true
-      }
-    }
+    response = createResponse(500, `Error in the backend, please contact support with the following ID: ${v4()}`);
   }
 
   return response

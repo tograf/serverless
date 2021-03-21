@@ -1,6 +1,6 @@
 import { createLogger } from '../utils/logger';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
-import { DynamoDBDocumentClient, QueryCommand, QueryCommandOutput } from "@aws-sdk/lib-dynamodb"
+import { DynamoDBDocumentClient, QueryCommand, QueryCommandOutput, PutCommand } from "@aws-sdk/lib-dynamodb"
 
 import { TodoItem } from '../models/TodoItem'
 
@@ -22,9 +22,8 @@ export class TodoItemAccess {
       KeyConditionExpression: 'userId = :id',
       ExpressionAttributeValues: {
         ':id': userId
-      },
-      ProjectionExpression: 'todoId, name, createdAt, dueDate, done, attachments'
-      //ProjectionExpression: 'todoId, userId, name'
+      }
+      //ProjectionExpression: 'todoId, name, createdAt, dueDate, done, attachments'
     }
   
     const command = new QueryCommand(params);
@@ -36,14 +35,16 @@ export class TodoItemAccess {
     return data.Items as TodoItem[];
   }
 
-  //async createTodoItem(group: TodoItem): Promise<TodoItem> {
-  //  await this.docClient.put({
-  //    TableName: this.groupsTable,
-  //    Item: group
-  //  }).promise()
+  async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
+    const params = {
+      TableName: this.todosTable,
+      Item: todoItem
+    }
+    const command = new PutCommand(params);
+    await this.dynamoDbClient.send(command);
 
-  //  return group
-  //}
+    return todoItem;
+  }
 }
 
 function createDynamoDBClient() {
