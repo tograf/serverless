@@ -91,19 +91,19 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: TodoId
+          - AttributeName: todoId
             AttributeType: S
-          - AttributeName: UserId
+          - AttributeName: userId
             AttributeType: S
         KeySchema:
-          - AttributeName: TodoId
+          - AttributeName: todoId
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TODOS_TABLE}
         GlobalSecondaryIndexes:
           - IndexName: ${self:provider.environment.TODOS_INDEX_NAME}
             KeySchema:
-              - AttributeName: UserId
+              - AttributeName: userId
                 KeyType: HASH
             Projection:
               ProjectionType: ALL # What attributes will be copied to an index
