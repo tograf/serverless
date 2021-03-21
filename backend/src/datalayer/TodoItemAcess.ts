@@ -23,8 +23,7 @@ export class TodoItemAccess {
       ExpressionAttributeValues: {
         ':id': userId
       },
-      ProjectionExpression: 'todoId, name, createdAt, dueDate, done, attachments'
-      //ProjectionExpression: 'todoId, userId, name'
+      //ProjectionExpression: 'todoId, name, createdAt, dueDate, done, attachments'
     }
   
     const command = new QueryCommand(params);
@@ -36,14 +35,14 @@ export class TodoItemAccess {
     return data.Items as TodoItem[];
   }
 
-  //async createTodoItem(group: TodoItem): Promise<TodoItem> {
-  //  await this.docClient.put({
+  async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
+  //     await this.docClient.put({
   //    TableName: this.groupsTable,
   //    Item: group
   //  }).promise()
 
-  //  return group
-  //}
+    return todoItem;
+  }
 }
 
 function createDynamoDBClient() {
