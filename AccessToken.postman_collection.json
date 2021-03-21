@@ -1,0 +1,108 @@
+{
+	"info": {
+		"_postman_id": "1078164d-cd1b-40a4-9eb8-4adfa0d2c3a3",
+		"name": "AccessToken",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Request Acess Token Copy",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "DUMMY_CLIENT_SECRET",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "DUMMY_CLIENT_ID",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "machine2machine",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://auth-i.bmwgroup.net/auth/oauth2/realms/root/realms/machine2machine/access_token",
+					"protocol": "https",
+					"host": [
+						"auth-i",
+						"bmwgroup",
+						"net"
+					],
+					"path": [
+						"auth",
+						"oauth2",
+						"realms",
+						"root",
+						"realms",
+						"machine2machine",
+						"access_token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Token using Tokeninfo Endpoint",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "DUMMY_ACCESS_TOKEN",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://auth-i.bmwgroup.net/auth/oauth2/realms/root/realms/machine2machine/tokeninfo",
+					"protocol": "https",
+					"host": [
+						"auth-i",
+						"bmwgroup",
+						"net"
+					],
+					"path": [
+						"auth",
+						"oauth2",
+						"realms",
+						"root",
+						"realms",
+						"machine2machine",
+						"tokeninfo"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -26,20 +26,33 @@ provider:
     #THUMBNAILS_S3_BUCKET: serverless-udagram-thumbnail-${self:provider.stage}
     #AUTH_0_SECRET_ID: Auth0Secret-${self:provider.stage}
     #AUTH_0_SECRET_FIELD: auth0Secret
+  
+  iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+          - dynamoDb:Scan
+          - dynamodb:GetItem
+        Resource:
+          - "Fn::GetAtt": [TodosTable, Arn]
+          - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_INDEX_NAME}
+          #- "Fn::Join": ['/', ["Fn::GetAtt": [ TodosTable, Arn ], 'index', ${self:custom.TODOS_INDEX_NAME}]]
 
 functions:
 
-  # Auth:
-  #   handler: src/lambda/auth/auth0Authorizer.handler
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
 
   # TODO: Configure this function
   GetTodos:
     handler: src/lambda/http/getTodos.handler
     events:
       - http:
-        method: get
-        path: todos
-
+          method: get
+          path: todos
+          cors: true
+          authorizer: Auth
+    
   # # TODO: Configure this function
   # CreateTodo:
   #   handler: src/lambda/http/createTodo.handler
@@ -80,17 +93,17 @@ resources:
         AttributeDefinitions:
           - AttributeName: todoId
             AttributeType: S
+          - AttributeName: userId
+            AttributeType: S
         KeySchema:
           - AttributeName: todoId
             KeyType: HASH
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.TODOS_TABLE}
-        #GlobalSecondaryIndexes:
-        #  - IndexName: ${self:provider.environment.TODOS_INDEX_NAME}
-        #    KeySchema:
-        #      - AttributeName: todoId
-        #        KeyType: HASH
-        #      - AttributeName: userId
-        #        KeyType: HASH
-        #    Projection:
-        #      ProjectionType: ALL # What attributes will be copied to an index
+        GlobalSecondaryIndexes:
+          - IndexName: ${self:provider.environment.TODOS_INDEX_NAME}
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: ALL # What attributes will be copied to an index
