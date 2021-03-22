@@ -36,6 +36,8 @@ provider:
           - dynamoDb:Scan
           - dynamodb:GetItem
           - dynamodb:PutItem
+          - dynamodb:UpdateItem
+          - dynamodb:DeleteItem
         Resource:
           - "Fn::GetAtt": [TodosTable, Arn]
           - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_INDEX_NAME}
@@ -52,6 +54,9 @@ custom:
       - name: CreateTodoRequest
         contentType: application/json
         schema: ${file(models/create-todo-request.json)}
+      - name: UpdateTodoRequest
+        contentType: application/json
+        schema: ${file(models/update-todo-request.json)}
 
 
 functions:
@@ -85,13 +90,25 @@ functions:
             requestModels:
               'application/json': CreateTodoRequest
 
-  # # TODO: Configure this function
-  # UpdateTodo:
-  #   handler: src/lambda/http/updateTodo.handler
-  #   events:
-  #     - http:
-  #         method: patch
-  #         path: todos/{todoId}
+  UpdateTodo:
+    handler: src/lambda/http/updateTodo.handler
+    events:
+      - http:
+          method: patch
+          path: todos/{todoId}
+          cors: true
+          authorizer: Auth
+          #request:
+          #  schemas:
+          #    application/json: ${file(models/update-todo-request.json)} 
+          #  parameters:
+          #    paths:
+          #      todoId: true
+          #documentation:
+          #  summary: Update an existing ToDo-Item
+          #  description: Create a new TodoItem
+          #  requestModels:
+          #s    'application/json': UpdateTodoRequest
 
   # # TODO: Configure this function
   # DeleteTodo:

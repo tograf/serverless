@@ -1,5 +1,9 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { parseUserId } from "../auth/utils";
+import { createLogger } from "../utils/logger";
+
+
+const logger = createLogger('http/utils');
 
 /**
  * Get a user id from an API Gateway event
@@ -16,6 +20,8 @@ export function getUserId(event: APIGatewayProxyEvent): string {
 }
 
 export function createResponse(httpCode: number, body: string): APIGatewayProxyResult {
+
+  logger.info(`Create http Response with httpCode: ${httpCode}`);
   const response = {
     statusCode: httpCode,
     body: body,
