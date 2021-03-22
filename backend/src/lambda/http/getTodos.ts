@@ -7,7 +7,7 @@ import { createLogger } from '../../utils/logger'
 import { v4 } from 'uuid'
 import { createResponse } from '../utils'
 
-const logger = createLogger('getTodos')
+const logger = createLogger('getTodos');
 
 
 export const handler: APIGatewayProxyHandler = async (
@@ -26,7 +26,7 @@ export const handler: APIGatewayProxyHandler = async (
     response = createResponse(200, JSON.stringify({items: data}));
   } catch (error) {
     logger.info(error);
-    response = createResponse(500, `Error in the backend, please contact support with the following ID: ${v4()}`);
+    response = createResponse(500, `GetTodos: Error in the backend, please contact support with the following ID: ${v4()}`);
   }
 
   return response
