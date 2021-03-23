@@ -9,7 +9,11 @@ import {
   UpdateCommand, 
   UpdateCommandOutput, 
   GetCommandOutput, 
-  UpdateCommandInput
+  UpdateCommandInput,
+  PutCommandInput,
+  DeleteCommand,
+  DeleteCommandInput,
+  DeleteCommandOutput
 } from "@aws-sdk/lib-dynamodb"
 
 import { TodoItem } from '../models/TodoItem'
@@ -17,14 +21,14 @@ import { TodoItem } from '../models/TodoItem'
 export class TodoItemAccess {
 
   constructor(
-    private readonly logger = createLogger('getTodos'),
+    private readonly logger = createLogger('TodoItemAccess'),
     private readonly dynamoDbClient: DynamoDBDocumentClient = createDynamoDBClient(),
     private readonly todosTable = process.env.TODOS_TABLE,
     private readonly userIdIndx = process.env.TODOS_INDEX_NAME) {
   }
 
   async getAllTodos(userId: string): Promise<TodoItem[]> {
-    this.logger.info(`Getting all ToDos for user ${userId}`);
+    this.logger.info(`getAllTodos: Getting all ToDos for user ${userId}`);
 
     const params = {
       TableName: this.todosTable,
@@ -40,13 +44,13 @@ export class TodoItemAccess {
 
     const data: QueryCommandOutput = await this.dynamoDbClient.send(command);
 
-    this.logger.info(`Queried Items: ${JSON.stringify(data.Items)}`);
+    this.logger.info(`getAllTodos: Queried Items: ${JSON.stringify(data.Items)}`);
 
     return data.Items as TodoItem[];
   }
 
   async getTodoItem(todoId: string):  Promise<TodoItem>  {
-    this.logger.info(`Get todoItem with ID ${todoId} and table ${this.todosTable}`);
+    this.logger.info(`getTodoItem: Get todoItem with ID ${todoId} and table ${this.todosTable}`);
 
     const params = {
       TableName: this.todosTable,
@@ -56,16 +60,31 @@ export class TodoItemAccess {
     }
 
     const command = new GetCommand(params);
-
-    const data: GetCommandOutput = await this.dynamoDbClient.send(command)
-    this.logger.info(`Item received ${JSON.stringify(data)}`);
+    const data: GetCommandOutput = await this.dynamoDbClient.send(command);
+    this.logger.info(`getTodoItem: Item received ${JSON.stringify(data)}`);
     
     return  data.Item as TodoItem;
   }
 
+  async deleteTodoItem(todoId: string): Promise<TodoItem>  {
+    this.logger.info(`deleteTodoItem: Delete todoItem with ID ${todoId}`);
+
+    const params : DeleteCommandInput = {
+      TableName: this.todosTable,
+      Key: {
+        todoId: todoId
+      },
+      ReturnValues: 'ALL_OLD'
+    }
+    const command = new DeleteCommand(params);
+    const result : DeleteCommandOutput = await this.dynamoDbClient.send(command);
+
+    return result.Attributes as TodoItem;
+  }
+
   async createTodoItem(todoItem: TodoItem): Promise<TodoItem> {
-    this.logger.info(`Get CreateTodoItem with ID ${todoItem.todoId}`);
-    const params = {
+    this.logger.info(`createTodoItem: Get CreateTodoItem with ID ${todoItem.todoId}`);
+    const params : PutCommandInput = {
       TableName: this.todosTable,
       Item: todoItem
     }
@@ -76,13 +95,13 @@ export class TodoItemAccess {
   }
 
   async updateTodoItem(todoItem: TodoItem): Promise<TodoItem> {
-    this.logger.info(`UpdateTodoItem with ID ${todoItem.todoId}`);
+    this.logger.info(`updateTodoItem: UpdateTodoItem with ID ${todoItem.todoId}`);
     const params : UpdateCommandInput = {
       TableName: this.todosTable,
       Key: {
         todoId: todoItem.todoId
       },
-      UpdateExpression: "SET  #dn=:done, #d=:dueDate,  #n=:name",//#at=:attachments,",
+      UpdateExpression: "SET  #dn=:done, #d=:dueDate, #n=:name",
       ReturnValues: 'ALL_NEW',
       ExpressionAttributeNames:{
         '#n' : 'name',
@@ -90,7 +109,7 @@ export class TodoItemAccess {
         '#d' : 'dueDate'
       },
       ExpressionAttributeValues: {
-        //':attachments' : todoItem.attachmentUrl,
+        ':name': todoItem.name,
         ':done': todoItem.done,
         ':dueDate': todoItem.dueDate
       }
