@@ -22,7 +22,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
     const data = await updateTodoItem(todoId, updatedTodo.name, updatedTodo.dueDate, updatedTodo.done);
     response = createResponse(200, JSON.stringify({item: data}));
   } catch (err) {
-    logger.error(`Error Updating Todo ${todoId} with Error: ${JSON.stringify(err)}`);
+    logger.error(`Error Updating Todo ${todoId} with Errors`);
     console.log(err);
     response = createResponse(500, `UpdateTodo: Error in the backend, please contact support with the following ID: ${v4()}`);
   }

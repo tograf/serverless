@@ -25,3 +25,7 @@ export async function updateTodoItem(todoId : string, name: string, dueDate: str
   logger.info(`Update Todo with id ${todoId}`);
   return todoItemAccess.updateTodoItem(todoItem);
 }
+
+export async function deleteTodo(todoId : string): Promise<TodoItem>  {
+  return todoItemAccess.deleteTodoItem(todoId);
+}

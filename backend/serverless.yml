@@ -110,13 +110,14 @@ functions:
           #  requestModels:
           #s    'application/json': UpdateTodoRequest
 
-  # # TODO: Configure this function
-  # DeleteTodo:
-  #   handler: src/lambda/http/deleteTodo.handler
-  #   events:
-  #     - http:
-  #         method: delete
-  #         path: todos/{todoId}
+  DeleteTodo:
+    handler: src/lambda/http/deleteTodo.handler
+    events:
+      - http:
+          method: delete
+          path: todos/{todoId}
+          cors: true
+          authorizer: Auth
 
   # # TODO: Configure this function
   # GenerateUploadUrl:

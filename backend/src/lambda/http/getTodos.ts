@@ -17,12 +17,11 @@ export const handler: APIGatewayProxyHandler = async (
 
   logger.log('info', `Get Todos for user ${userId}`)
 
-  let response: APIGatewayProxyResult | PromiseLike<APIGatewayProxyResult>;
+  let response: APIGatewayProxyResult;
 
   try {
     const data = await getAllTodos(userId);
-    const msg = `${data.length} items found for user ${userId}`
-    logger.info(msg);
+    logger.info(`${data.length} items found for user ${userId}`);
     response = createResponse(200, JSON.stringify({items: data}));
   } catch (error) {
     logger.info(error);
