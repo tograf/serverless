@@ -1,9 +1,11 @@
 import { TodoItem } from '../models/TodoItem'
 import { TodoItemAccess } from '../datalayer/TodoItemAcess'
 import { createLogger } from '../utils/logger';
+import { S3Access } from '../datalayer/S3Access';
 
 const logger = createLogger('todoItemAccess');
 const todoItemAccess = new TodoItemAccess();
+const s3Access = new S3Access();
 
 export async function getAllTodos(userId : string): Promise<TodoItem[]> {
   return todoItemAccess.getAllTodos(userId);
@@ -28,4 +30,11 @@ export async function updateTodoItem(todoId : string, name: string, dueDate: str
 
 export async function deleteTodo(todoId : string): Promise<TodoItem>  {
   return todoItemAccess.deleteTodoItem(todoId);
+}
+
+export async function createUploadUrlTodo(todoId : string): Promise<string>  {
+  const url = await s3Access.createSignedUrl(todoId);
+  await todoItemAccess.updateUploadUrlTodoItem(todoId, url);
+
+  return url;
 }
