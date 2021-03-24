@@ -3,10 +3,10 @@
     "title": "image",
     "type": "object",
     "properties": {
-      "title": {
+      "name": {
         "type": "string"
       },
-      "tdueDate": {
+      "dueDate": {
         "type": "string"
       },
       "done": {
@@ -14,7 +14,7 @@
       }
     },
     "required": [
-      "title",
+      "name",
       "dueDate",
       "done"
     ],
