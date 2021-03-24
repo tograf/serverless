@@ -21,13 +21,8 @@ provider:
   environment:
     TODOS_TABLE: Todos-table-${self:provider.stage}
     TODOS_INDEX_NAME: TodosIndex
-    #IMAGE_ID_INDEX: ImageIdIndex
-    #CONNECTIONS_TABLE: Connections-${self:provider.stage}
-    #IMAGES_S3_BUCKET: serverless-udagram-images-${self:provider.stage}
-    #SIGNED_URL_EXPIRATION: 300
-    #THUMBNAILS_S3_BUCKET: serverless-udagram-thumbnail-${self:provider.stage}
-    #AUTH_0_SECRET_ID: Auth0Secret-${self:provider.stage}
-    #AUTH_0_SECRET_FIELD: auth0Secret
+    ATTACHMENT_S3_BUCKET: ${self:provider.stage}-todos-attachments-mctobber
+    SIGNED_URL_EXPIRATION: 300
   
   iamRoleStatements:
       - Effect: Allow
@@ -42,6 +37,11 @@ provider:
           - "Fn::GetAtt": [TodosTable, Arn]
           - arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_INDEX_NAME}
           #- "Fn::Join": ['/', ["Fn::GetAtt": [ TodosTable, Arn ], 'index', ${self:custom.TODOS_INDEX_NAME}]]
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*
 
 custom:
   documentation:
@@ -119,13 +119,14 @@ functions:
           cors: true
           authorizer: Auth
 
-  # # TODO: Configure this function
-  # GenerateUploadUrl:
-  #   handler: src/lambda/http/generateUploadUrl.handler
-  #   events:
-  #     - http:
-  #         method: post
-  #         path: todos/{todoId}/attachment
+  GenerateUploadUrl:
+    handler: src/lambda/http/generateUploadUrl.handler
+    events:
+      - http:
+          method: post
+          path: todos/{todoId}/attachment
+          cors: true
+          authorizer: Auth
 
 resources:
   Resources:
@@ -149,3 +150,36 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: ALL # What attributes will be copied to an index
+
+    AttachmentsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.ATTACHMENT_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
+
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*'
+        Bucket: !Ref AttachmentsBucket

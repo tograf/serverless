@@ -119,6 +119,28 @@ export class TodoItemAccess {
     
     return data.Attributes as TodoItem;
   }
+
+  async updateUploadUrlTodoItem(todoId: string, url: string): Promise<TodoItem> {
+    this.logger.info(`updateUploadUrlTodoItem: Add URL to ID ${todoId}`);
+    const params : UpdateCommandInput = {
+      TableName: this.todosTable,
+      Key: {
+        todoId: todoId
+      },
+      UpdateExpression: "SET  #au=:attachments",
+      ReturnValues: 'ALL_NEW',
+      ExpressionAttributeNames:{
+        '#au' : 'attachments'
+      },
+      ExpressionAttributeValues: {
+        ':attachments': url
+      }
+    }
+    const command = new UpdateCommand(params);
+    const data: UpdateCommandOutput = await this.dynamoDbClient.send(command);
+    
+    return data.Attributes as TodoItem;
+  }
 }
 
 
