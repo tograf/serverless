@@ -5,6 +5,7 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.8.1",
     "@aws-sdk/client-s3": "^3.9.0",
+    "@aws-sdk/client-xray": "^3.9.0",
     "@aws-sdk/lib-dynamodb": "^3.9.0",
     "@aws-sdk/s3-request-presigner": "^3.9.0",
     "@types/axios": "^0.14.0",

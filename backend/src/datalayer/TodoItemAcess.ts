@@ -127,13 +127,13 @@ export class TodoItemAccess {
       Key: {
         todoId: todoId
       },
-      UpdateExpression: "SET  #au=:attachments",
+      UpdateExpression: "SET  #au=:attachmentUrl",
       ReturnValues: 'ALL_NEW',
       ExpressionAttributeNames:{
-        '#au' : 'attachments'
+        '#au' : 'attachmentUrl'
       },
       ExpressionAttributeValues: {
-        ':attachments': url
+        ':attachmentUrl': url
       }
     }
     const command = new UpdateCommand(params);

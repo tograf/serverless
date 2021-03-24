@@ -34,7 +34,7 @@ export async function deleteTodo(todoId : string): Promise<TodoItem>  {
 
 export async function createUploadUrlTodo(todoId : string): Promise<string>  {
   const url = await s3Access.createSignedUrl(todoId);
-  await todoItemAccess.updateUploadUrlTodoItem(todoId, url);
+  await todoItemAccess.updateUploadUrlTodoItem(todoId, url.split("?")[0]);
 
   return url;
 }
