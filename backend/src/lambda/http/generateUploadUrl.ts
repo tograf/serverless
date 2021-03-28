@@ -9,6 +9,7 @@ const logger = createLogger('generateUploadUrl');
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId
+  const userId = event.requestContext.authorizer.principalId;
 
   logger.info(`Create Upload URL for Todo ${todoId}`);
   logger.info(`Upload Event ${event}`);
@@ -16,7 +17,7 @@ export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEven
   let response: APIGatewayProxyResult
 
   try {
-    const url = await createUploadUrlTodo(todoId);
+    const url = await createUploadUrlTodo(todoId, userId);
     response = createResponse(200, JSON.stringify({uploadUrl: url}));
   } catch(err) {
     console.log(err)

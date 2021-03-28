@@ -15,10 +15,10 @@ export async function createTodo(todoItem : TodoItem): Promise<TodoItem> {
   return todoItemAccess.createTodoItem(todoItem);
 }
 
-export async function updateTodoItem(todoId : string, name: string, dueDate: string, done: boolean): Promise<TodoItem> {
+export async function updateTodoItem(todoId : string, userId: string, name: string, dueDate: string, done: boolean): Promise<TodoItem> {
 
   logger.info(`Get Todo with id ${todoId}`);
-  const todoItem = await todoItemAccess.getTodoItem(todoId);
+  const todoItem = await todoItemAccess.getTodoItem(todoId, userId);
 
   todoItem.done = done;
   todoItem.name = name;
@@ -28,13 +28,13 @@ export async function updateTodoItem(todoId : string, name: string, dueDate: str
   return todoItemAccess.updateTodoItem(todoItem);
 }
 
-export async function deleteTodo(todoId : string): Promise<TodoItem>  {
-  return todoItemAccess.deleteTodoItem(todoId);
+export async function deleteTodo(todoId : string, userId: string): Promise<TodoItem>  {
+  return todoItemAccess.deleteTodoItem(todoId, userId);
 }
 
-export async function createUploadUrlTodo(todoId : string): Promise<string>  {
+export async function createUploadUrlTodo(todoId : string, userId: string): Promise<string>  {
   const url = await s3Access.createSignedUrl(todoId);
-  await todoItemAccess.updateUploadUrlTodoItem(todoId, url.split("?")[0]);
+  await todoItemAccess.updateUploadUrlTodoItem(todoId, userId, url.split("?")[0]);
 
   return url;
 }

@@ -8,12 +8,13 @@ import { createResponse } from '../utils'
 const logger = createLogger('createTodos')
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
   const todoId = event.pathParameters.todoId
+  const userId = event.requestContext.authorizer.principalId;
   logger.info(`Delete TodoItem with todoID ${todoId}`);
 
   let response : APIGatewayProxyResult;
 
   try {
-    await deleteTodo(todoId);
+    await deleteTodo(todoId, userId);
     response = createResponse(204, "");
   } catch(err) {
     response = createResponse(500, "error deleteing item");

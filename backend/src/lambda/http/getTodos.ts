@@ -13,7 +13,7 @@ const logger = createLogger('getTodos');
 export const handler: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const userId = event.requestContext.authorizer.principalId
+  const userId = event.requestContext.authorizer.principalId;
 
   logger.log('info', `Get Todos for user ${userId}`)
 

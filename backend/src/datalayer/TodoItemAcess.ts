@@ -53,13 +53,14 @@ export class TodoItemAccess {
     return data.Items as TodoItem[];
   }
 
-  async getTodoItem(todoId: string):  Promise<TodoItem>  {
+  async getTodoItem(todoId: string, userId: string):  Promise<TodoItem>  {
     this.logger.info(`getTodoItem: Get todoItem with ID ${todoId} and table ${this.todosTable}`);
 
     const params = {
       TableName: this.todosTable,
       Key: {
-        todoId: todoId
+        todoId: todoId,
+        userId: userId
       }
     }
 
@@ -73,13 +74,14 @@ export class TodoItemAccess {
     return  data.Item as TodoItem;
   }
 
-  async deleteTodoItem(todoId: string): Promise<TodoItem>  {
+  async deleteTodoItem(todoId: string, userId: string): Promise<TodoItem>  {
     this.logger.info(`deleteTodoItem: Delete todoItem with ID ${todoId}`);
 
     const params : DeleteCommandInput = {
       TableName: this.todosTable,
       Key: {
-        todoId: todoId
+        todoId: todoId,
+        userId: userId
       },
       ReturnValues: 'ALL_OLD'
     }
@@ -112,7 +114,8 @@ export class TodoItemAccess {
     const params : UpdateCommandInput = {
       TableName: this.todosTable,
       Key: {
-        todoId: todoItem.todoId
+        todoId: todoItem.todoId,
+        userId: todoItem.userId
       },
       UpdateExpression: "SET  #dn=:done, #d=:dueDate, #n=:name",
       ReturnValues: 'ALL_NEW',
@@ -136,12 +139,13 @@ export class TodoItemAccess {
     return data.Attributes as TodoItem;
   }
 
-  async updateUploadUrlTodoItem(todoId: string, url: string): Promise<TodoItem> {
+  async updateUploadUrlTodoItem(todoId: string, userId: string, url: string): Promise<TodoItem> {
     this.logger.info(`updateUploadUrlTodoItem: Add URL to ID ${todoId}`);
     const params : UpdateCommandInput = {
       TableName: this.todosTable,
       Key: {
-        todoId: todoId
+        todoId: todoId,
+        userId: userId
       },
       UpdateExpression: "SET  #au=:attachmentUrl",
       ReturnValues: 'ALL_NEW',
