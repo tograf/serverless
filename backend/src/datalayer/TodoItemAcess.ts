@@ -15,6 +15,7 @@ import {
   DeleteCommandInput,
   DeleteCommandOutput
 } from "@aws-sdk/lib-dynamodb"
+import * as AWSXRay from 'aws-xray-sdk';
 
 import { TodoItem } from '../models/TodoItem'
 
@@ -42,7 +43,10 @@ export class TodoItemAccess {
   
     const command = new QueryCommand(params);
 
+    const segment = AWSXRay.getSegment();
+    const subSegment = segment.addNewSubsegment("TodoItemAccess");
     const data: QueryCommandOutput = await this.dynamoDbClient.send(command);
+    subSegment.close();
 
     this.logger.info(`getAllTodos: Queried Items: ${JSON.stringify(data.Items)}`);
 
@@ -60,7 +64,10 @@ export class TodoItemAccess {
     }
 
     const command = new GetCommand(params);
+    const segment = AWSXRay.getSegment();
+    const subSegment = segment.addNewSubsegment("TodoItemAccess");
     const data: GetCommandOutput = await this.dynamoDbClient.send(command);
+    subSegment.close();
     this.logger.info(`getTodoItem: Item received ${JSON.stringify(data)}`);
     
     return  data.Item as TodoItem;
@@ -77,7 +84,10 @@ export class TodoItemAccess {
       ReturnValues: 'ALL_OLD'
     }
     const command = new DeleteCommand(params);
+    const segment = AWSXRay.getSegment();
+    const subSegment = segment.addNewSubsegment("TodoItemAccess");
     const result : DeleteCommandOutput = await this.dynamoDbClient.send(command);
+    subSegment.close();
 
     return result.Attributes as TodoItem;
   }
@@ -89,7 +99,10 @@ export class TodoItemAccess {
       Item: todoItem
     }
     const command = new PutCommand(params);
+    const segment = AWSXRay.getSegment();
+    const subSegment = segment.addNewSubsegment("TodoItemAccess");
     await this.dynamoDbClient.send(command);
+    subSegment.close();
 
     return todoItem;
   }
@@ -115,7 +128,10 @@ export class TodoItemAccess {
       }
     }
     const command = new UpdateCommand(params);
+    const segment = AWSXRay.getSegment();
+    const subSegment = segment.addNewSubsegment("TodoItemAccess");
     const data: UpdateCommandOutput = await this.dynamoDbClient.send(command);
+    subSegment.close();
     
     return data.Attributes as TodoItem;
   }
@@ -137,14 +153,15 @@ export class TodoItemAccess {
       }
     }
     const command = new UpdateCommand(params);
+    const segment = AWSXRay.getSegment();
+    const subSegment = segment.addNewSubsegment("TodoItemAccess");
     const data: UpdateCommandOutput = await this.dynamoDbClient.send(command);
+    subSegment.close();
     
     return data.Attributes as TodoItem;
   }
 }
 
-
-
-  function createDynamoDBClient() {
-    return DynamoDBDocumentClient.from(new DynamoDBClient({}));
-  }
+function createDynamoDBClient() {
+  return DynamoDBDocumentClient.from(new DynamoDBClient({}));
+}
